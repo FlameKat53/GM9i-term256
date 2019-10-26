@@ -1,4 +1,5 @@
-main.o: /Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/source/main.c \
+main.o: /Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/source/main.cpp \
+ /Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/source/../term256/term256.h \
  /opt/devkitpro/libnds/include/nds.h \
  /opt/devkitpro/libnds/include/nds/libversion.h \
  /opt/devkitpro/libnds/include/nds/ndstypes.h \
@@ -59,13 +60,14 @@ main.o: /Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/source/main.c \
  /opt/devkitpro/libnds/include/nds/arm9/video.h \
  /opt/devkitpro/libnds/include/nds/arm9/videoGL.h \
  /opt/devkitpro/libnds/include/nds/arm9/nand.h \
- /opt/devkitpro/libnds/include/fat.h \
- /opt/devkitpro/libnds/include/libfatversion.h \
- /opt/devkitpro/libnds/include/nds/disc_io.h \
- /Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/source/../term256/term256.h \
  /Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/source/../term256/font.h \
  /Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/source/../term256/term256ext.h \
- /Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/include/driveOperations.h
+ /Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/include/driveOperations.h \
+ /opt/devkitpro/libnds/include/fat.h \
+ /opt/devkitpro/libnds/include/libfatversion.h \
+ /opt/devkitpro/libnds/include/nds/disc_io.h
+
+/Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/source/../term256/term256.h:
 
 /opt/devkitpro/libnds/include/nds.h:
 
@@ -187,16 +189,14 @@ main.o: /Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/source/main.c \
 
 /opt/devkitpro/libnds/include/nds/arm9/nand.h:
 
-/opt/devkitpro/libnds/include/fat.h:
-
-/opt/devkitpro/libnds/include/libfatversion.h:
-
-/opt/devkitpro/libnds/include/nds/disc_io.h:
-
-/Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/source/../term256/term256.h:
-
 /Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/source/../term256/font.h:
 
 /Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/source/../term256/term256ext.h:
 
 /Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/include/driveOperations.h:
+
+/opt/devkitpro/libnds/include/fat.h:
+
+/opt/devkitpro/libnds/include/libfatversion.h:
+
+/opt/devkitpro/libnds/include/nds/disc_io.h:

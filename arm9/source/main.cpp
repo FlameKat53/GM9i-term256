@@ -1,3 +1,9 @@
+extern "C" {
+#include "../term256/term256.h"
+#include "../term256/term256ext.h"
+#include "driveOperations.h"
+}
+
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
@@ -5,9 +11,6 @@
 #include <sys/statvfs.h>
 #include <nds.h>
 #include <fat.h>
-#include "../term256/term256.h"
-#include "../term256/term256ext.h"
-#include "driveOperations.h"
 
 term_t t0;
 term_t t1;

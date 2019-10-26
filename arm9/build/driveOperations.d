@@ -1,5 +1,5 @@
 driveOperations.o: \
- /Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/source/driveOperations.c \
+ /Users/Rodgers/Desktop/GodMode9i-REWRITE/arm9/source/driveOperations.cpp \
  /opt/devkitpro/libnds/include/nds.h \
  /opt/devkitpro/libnds/include/nds/libversion.h \
  /opt/devkitpro/libnds/include/nds/ndstypes.h \
