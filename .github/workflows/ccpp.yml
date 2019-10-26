@@ -1,4 +1,4 @@
-name: Relaunch Binary Compilation
+name: GM9i-term256 Binary Compilation
 
 on:
   push:
@@ -15,11 +15,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Install devkit(Pro/ARM), libnds, and p7zip
+    - name: Install devkit(Pro/ARM) and libnds
       run: |
        curl -L https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.1/devkitpro-pacman.deb -o pacman.deb
        sudo apt update
-       sudo apt install p7zip-full haveged
        sudo dpkg -i pacman.deb
        sudo dkp-pacman -Sy
        sudo dkp-pacman -S nds-dev --noconfirm
@@ -32,5 +31,5 @@ jobs:
         cp godmode9i.nds gm9i-term256/godmode9i.nds
     - uses: actions/upload-artifact@master
       with:
-        name: gm9i-term256--${{ github.sha }}
-        path: gm9i-term256/
+        name: GM9i-term256-${{ github.sha }}
+        path: GM9i-term256/
