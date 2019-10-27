@@ -64,7 +64,7 @@ int main(int argc, const char * const argv[]) {
 	prt("\x1b[6;1H");
 	prt("\t--------------------------------");
 	prt("\x1b[7;1H");
-	prt("\t\thttps:/github.com/\n");
+	prt("\thttps:/github.com/\n");
 	prt("\t\t\t\tRocketRobz/GodMode9i");
 	if (isDSiMode()) {
 		prt("\x1b[22;1H");
