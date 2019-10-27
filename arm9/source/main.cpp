@@ -80,16 +80,11 @@ int main(int argc, char **argv) {
 
 	videoSetModeSub(MODE_3_2D);
 	videoSetMode(MODE_3_2D);
-	// initialize all the VRAM banks
-	vramSetBankA(VRAM_A_TEXTURE);
-	vramSetBankB(VRAM_B_TEXTURE);
-	vramSetBankC(VRAM_C_SUB_BG_0x06200000);
-	vramSetBankD(VRAM_D_MAIN_BG_0x06000000);
-	vramSetBankE(VRAM_E_TEX_PALETTE);
-	vramSetBankF(VRAM_F_TEX_PALETTE_SLOT4);
-	vramSetBankG(VRAM_G_TEX_PALETTE_SLOT5);
-	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);
-	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
+	// initialize VRAM banks
+	vramSetPrimaryBanks(VRAM_A_MAIN_BG,
+	                    VRAM_B_MAIN_SPRITE,
+	                    VRAM_C_LCD,
+	                    VRAM_D_LCD);
 	int bg0id = bgInitSub(3, BgType_Bmp8, BgSize_B8_256x256, 0, 0);
 	int bg1id = bgInit(3, BgType_Bmp8, BgSize_B8_256x256, 0, 0);
 	u16 *bg0 = bgGetGfxPtr(bg0id);
@@ -154,7 +149,16 @@ int main(int argc, char **argv) {
 	}
 
 	videoSetMode(MODE_0_2D);
-	vramSetBankG(VRAM_G_MAIN_BG);
+	// initialize all the VRAM banks
+	vramSetBankA(VRAM_A_TEXTURE);
+	vramSetBankB(VRAM_B_TEXTURE);
+	vramSetBankC(VRAM_C_SUB_BG_0x06200000);
+	vramSetBankD(VRAM_D_MAIN_BG_0x06000000);
+	vramSetBankE(VRAM_E_TEX_PALETTE);
+	vramSetBankF(VRAM_F_TEX_PALETTE_SLOT4);
+	vramSetBankG(VRAM_G_TEX_PALETTE_SLOT5);
+	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);
+	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 
 	keysSetRepeat(25,5);
 
