@@ -7,7 +7,6 @@ extern "C" {
 #include "driveOperations.h"
 #include "file_browse.h"
 #include "fileOperations.h"
-//}
 
 #include "gm9i_logo.h"
 #include "driveMenu.h"
@@ -138,6 +137,11 @@ int main(int argc, const char * const argv[]) {
 		flashcardMounted = flashcardMount();
 		flashcardMountSkipped = false;
 	}
+
+	videoSetMode(MODE_0_2D);
+	vramSetBankG(VRAM_G_MAIN_BG);
+
+	keysSetRepeat(25,5);
 
 	appInited = true;
 
