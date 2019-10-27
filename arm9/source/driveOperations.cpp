@@ -1,29 +1,32 @@
+extern "C" {
+#include "../term256/term256.h"
+#include "../term256/term256ext.h"
+}
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <nds.h>
+#include <nds/arm9/dldi.h>
 #include <fat.h>
-#include "../term256/term256.h"
-#include "../term256/term256ext.h"
+#include "main.h"
+#include "dldi-include.h"
 
 u8 stored_SCFG_MC = 0;
 
+static sNDSHeader nds;
+
+static bool slot1Enabled = true;
 bool sdMounted = false;
 bool sdMountedDone = false;				// true if SD mount is successful once
 bool flashcardMounted = false;
 bool nitroMounted = false;
-bool arm7SCFGLocked = false;
-bool isRegularDS = true;
 bool secondaryDrive = false;				// false == SD card, true == Flashcard
 bool nitroSecondaryDrive = false;			// false == SD card, true == Flashcard
 
 char sdLabel[12];
 char fatLabel[12];
-
-int sdSize = 0;
-int fatSize = 0;
 
 void fixLabel(bool fat) {
 	if (fat) {
@@ -85,7 +88,6 @@ TWL_CODE bool sdMount(void) {
 TWL_CODE void sdUnmount(void) {
 	fatUnmount("sd");
 	sdLabel[0] = '\0';
-	sdSize = 0;
 	sdMounted = false;
 }
 
@@ -107,25 +109,7 @@ bool flashcardMount(void) {
 void flashcardUnmount(void) {
 	fatUnmount("fat");
 	fatLabel[0] = '\0';
-	fatSize = 0;
 	flashcardMounted = false;
-}
-
-void printBytes(unsigned long long bytes) {
-	if  (bytes == 1)
-		iprtf("%d Byte", (unsigned int)bytes);
-
-	else if (bytes < 1024)
-		iprtf("%d Bytes", (unsigned int)bytes);
-
-	else if (bytes < 1024 * 1024)
-		iprtf("%.2f KB", (float)bytes / 1024.f);
-
-	else if (bytes < 1024 * 1024 * 1024)
-		iprtf("%.2f MB", (float)bytes / 1024.f / 1024.f);
-
-	else
-		iprtf("%.2f GB", (float)bytes / 1024.f / 1024.f / 1024.f);
 }
 
 unsigned long long getSDCardSize() {
@@ -166,4 +150,115 @@ unsigned long long getFlashcardFree() {
 	}
 
 	return 0;
+}
+
+
+TWL_CODE DLDI_INTERFACE* dldiLoadFromBin (const u8 dldiAddr[]) {
+	// Check that it is a valid DLDI
+	if (!dldiIsValid ((DLDI_INTERFACE*)dldiAddr)) {
+		return NULL;
+	}
+
+	DLDI_INTERFACE* device = (DLDI_INTERFACE*)dldiAddr;
+	size_t dldiSize;
+
+	// Calculate actual size of DLDI
+	// Although the file may only go to the dldiEnd, the BSS section can extend past that
+	if (device->dldiEnd > device->bssEnd) {
+		dldiSize = (char*)device->dldiEnd - (char*)device->dldiStart;
+	} else {
+		dldiSize = (char*)device->bssEnd - (char*)device->dldiStart;
+	}
+	dldiSize = (dldiSize + 0x03) & ~0x03; 		// Round up to nearest integer multiple
+	
+	// Clear unused space
+	memset(device+dldiSize, 0, 0x4000-dldiSize);
+
+	dldiFixDriverAddresses (device);
+
+	if (device->ioInterface.features & FEATURE_SLOT_GBA) {
+		sysSetCartOwner(BUS_OWNER_ARM9);
+	}
+	if (device->ioInterface.features & FEATURE_SLOT_NDS) {
+		sysSetCardOwner(BUS_OWNER_ARM9);
+	}
+	
+	return device;
+}
+
+TWL_CODE bool UpdateCardInfo(char* gameid, char* gamename) {
+	cardReadHeader((uint8*)0x02000000);
+	memcpy(&nds, (void*)0x02000000, sizeof(sNDSHeader));
+	memcpy(gameid, &nds.gameCode, 4);
+	gameid[4] = 0x00;
+	memcpy(gamename, &nds.gameTitle, 12);
+	gamename[12] = 0x00;
+	return true;
+}
+
+TWL_CODE void ShowGameInfo(const char gameid[], const char gamename[]) {
+	iprtf("Game id: %s\nName:    %s", gameid, gamename);
+}
+
+TWL_CODE bool twl_flashcardMount(void) {
+	if (REG_SCFG_MC != 0x11) {
+		sysSetCardOwner (BUS_OWNER_ARM9);
+
+		// Reset Slot-1 to allow reading title name and ID
+		if (slot1Enabled) {
+			disableSlot1();
+			for(int i = 0; i < 25; i++) { swiWaitForVBlank(); }
+			slot1Enabled = false;
+		}
+		if (appInited) {
+			for(int i = 0; i < 35; i++) { swiWaitForVBlank(); }	// Make sure cart is inserted correctly
+		}
+		if (REG_SCFG_MC == 0x11) {
+			sysSetCardOwner (BUS_OWNER_ARM7);
+			return false;
+		}
+		if (!slot1Enabled) {
+			enableSlot1();
+			for(int i = 0; i < 15; i++) { swiWaitForVBlank(); }
+			slot1Enabled = true;
+		}
+
+		nds.gameCode[0] = 0;
+		nds.gameTitle[0] = 0;
+		char gamename[13];
+		char gameid[5];
+
+		UpdateCardInfo(&gameid[0], &gamename[0]);
+
+		sysSetCardOwner (BUS_OWNER_ARM7);	// 3DS fix
+
+		if (gameid[0] >= 0x00 && gameid[0] < 0x20) {
+			return false;
+		}
+
+		// Read a DLDI driver specific to the cart
+		if (!memcmp(gameid, "ASMA", 4)) {
+			io_dldi_data = dldiLoadFromBin(r4tf_dldi);
+			fatMountSimple("fat", &io_dldi_data->ioInterface);      
+		} else if (!memcmp(gamename, "TOP TF/SD DS", 12) || !memcmp(gameid, "A76E", 4)) {
+			io_dldi_data = dldiLoadFromBin(tt_sd_dldi);
+			fatMountSimple("fat", &io_dldi_data->ioInterface);
+ 		} else if (!memcmp(gamename, "D!S!XTREME", 12) && !memcmp(gameid, "AYIE", 4)) {
+			io_dldi_data = dldiLoadFromBin(dsx_dldi);
+			fatMountSimple("fat", &io_dldi_data->ioInterface); 
+        } else if (!memcmp(gamename, "QMATETRIAL", 9) || !memcmp(gamename, "R4DSULTRA", 9)) {
+			io_dldi_data = dldiLoadFromBin(r4idsn_sd_dldi);
+			fatMountSimple("fat", &io_dldi_data->ioInterface);
+		} else if (!memcmp(gameid, "ACEK", 4) || !memcmp(gameid, "YCEP", 4) || !memcmp(gameid, "AHZH", 4) || !memcmp(gameid, "CHPJ", 4)) {
+			io_dldi_data = dldiLoadFromBin(ak2_sd_dldi);
+			fatMountSimple("fat", &io_dldi_data->ioInterface);
+		}
+
+		if (flashcardFound()) {
+			fatGetVolumeLabel("fat", fatLabel);
+			fixLabel(true);
+			return true;
+		}
+	}
+	return false;
 }
