@@ -168,6 +168,10 @@ int main(int argc, char **argv) {
 		} else {
 			filename = browseForFile();
 		}
+
+		if (applaunch) {
+		prt("not implemented ");
+		}
 	}
 
 	return 0;
