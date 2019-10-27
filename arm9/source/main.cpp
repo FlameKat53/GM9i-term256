@@ -62,7 +62,7 @@ int main(int argc, const char * const argv[]) {
 	prt("\x1b[5;1H");
 	prt("\tGodMode9i v2.0.0");
 	prt("\x1b[6;1H");
-	prt("\t------------------------------");
+	prt("\t--------------------------------");
 	prt("\x1b[7;1H");
 	prt("\t\thttps:/github.com/\n");
 	prt("\t\t\t\tRocketRobz/GodMode9i");
