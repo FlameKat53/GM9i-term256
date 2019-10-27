@@ -1,9 +1,9 @@
 <p align="center">
 	<img src="https://github.com/RocketRobz/GodMode9i/blob/master/resources/logo2_small.png"><br>
-	<b>A WIP file browser for (3)DS(i) :godmode:</b>
+	<b>:godmode:</b>
 </p>
 
-GM9i-term256 is a **COMPLETELY WORK IN PROGRESS** file browser for the Nintendo (3)DS(i).
+GodMode9i-term256 is a WIP file browser made for the Nintendo DSi. It can be used via flashcards (allowing it to work on the Nintendo DS) as well as SD cards (allowing it to work on the Nintendo 3DS via it's DSi backwards compatibility)
 
 
 In order to compile this application on your own, you will need [devkitPro](https://devkitpro.org/) with the devkitARM toolchain, plus the necessary tools and libraries. devkitPro includes `dkp-pacman` for easy installation of all components:
