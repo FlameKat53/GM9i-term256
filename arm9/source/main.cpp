@@ -45,6 +45,13 @@ static int bg3;
 
 using namespace std;
 
+bool extension(const std::string& filename, const char* ext) {
+	if(strcasecmp(filename.c_str() + filename.size() - strlen(ext), ext)) {
+		return false;
+	} else {
+		return true;
+	}
+}
 void set_scroll_callback(int x, int y, void *param) {
 	bgSetScroll(*(int*)param, x, y);
 	bgUpdate();
@@ -56,7 +63,7 @@ void stop() {
 	}
 }
 
-int main(int argc, const char * const argv[]) {
+int main(int argc, char **argv) {
 
 	// overwrite reboot stub identifier
 	extern u64 *fake_heap_end;
@@ -73,8 +80,16 @@ int main(int argc, const char * const argv[]) {
 
 	videoSetModeSub(MODE_3_2D);
 	videoSetMode(MODE_3_2D);
-	vramSetBankC(VRAM_C_SUB_BG);
-	vramSetBankA(VRAM_A_MAIN_BG);
+	// initialize all the VRAM banks
+	vramSetBankA(VRAM_A_TEXTURE);
+	vramSetBankB(VRAM_B_TEXTURE);
+	vramSetBankC(VRAM_C_SUB_BG_0x06200000);
+	vramSetBankD(VRAM_D_MAIN_BG_0x06000000);
+	vramSetBankE(VRAM_E_TEX_PALETTE);
+	vramSetBankF(VRAM_F_TEX_PALETTE_SLOT4);
+	vramSetBankG(VRAM_G_TEX_PALETTE_SLOT5);
+	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);
+	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	int bg0id = bgInitSub(3, BgType_Bmp8, BgSize_B8_256x256, 0, 0);
 	int bg1id = bgInit(3, BgType_Bmp8, BgSize_B8_256x256, 0, 0);
 	u16 *bg0 = bgGetGfxPtr(bg0id);
