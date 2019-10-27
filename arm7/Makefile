@@ -37,19 +37,16 @@ CFLAGS	+=	$(INCLUDE) -DARM7
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=ds_arm7.specs -g $(ARCH) -Wl,--nmagic -Wl,-Map,$(notdir $*).map
 
-
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
 LIBS	:= -lnds7
-
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
 LIBDIRS	:=	$(LIBNDS)
-
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional
@@ -99,7 +96,6 @@ $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) -C $(BUILD) -f $(CURDIR)/Makefile
 
-
 #---------------------------------------------------------------------------------
 dist: all
 #---------------------------------------------------------------------------------
@@ -115,7 +111,6 @@ install: all
 clean:
 	@echo clean ...
 	@rm -fr $(BUILD) $(TARGET).elf  $(TARGET).arm7
-
 
 #---------------------------------------------------------------------------------
 else

@@ -13,7 +13,6 @@ export VERSION_MAJOR	:= 1
 export VERSION_MINOR	:= 1
 export VERSION_PATCH	:= 0
 
-
 VERSION	:=	$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
 #---------------------------------------------------------------------------------
 # TARGET is the name of the output
@@ -28,7 +27,7 @@ BUILD		:=	build
 SOURCES		:=	source
 INCLUDES	:=	include source
 DATA		:=	data
-GRAPHICS	:=  	gfx
+GRAPHICS	:=  gfx
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -97,11 +96,11 @@ endif
 
 export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 					$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
- 
+
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-iquote $(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
 					-I$(CURDIR)/$(BUILD)
- 
+
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 
 icons := $(wildcard *.bmp)
@@ -113,24 +112,23 @@ else
 		export GAME_ICON := $(CURDIR)/icon.bmp
 	endif
 endif
- 
+
 export GAME_TITLE := $(TARGET)
 
 .PHONY: bootloader bootstub clean arm7/$(TARGET).elf arm9/$(TARGET).elf
 
 all:	bootloader bootstub $(TARGET).nds
-	
+
 dist:	all
 	@rm	-fr	hbmenu
 	@mkdir hbmenu
 	@cp $(TARGET).nds hbmenu/BOOT.NDS
 	@cp BootStrap/_BOOT_MP.NDS BootStrap/TTMENU.DAT BootStrap/_DS_MENU.DAT BootStrap/ez5sys.bin BootStrap/akmenu4.nds hbmenu
 	@tar -cvjf $(TARGET)-$(VERSION).tar.bz2 hbmenu testfiles README.html COPYING hbmenu -X exclude.lst
-	
+
 $(TARGET).nds:	$(TARGET).arm7 $(TARGET).arm9
 	ndstool	-c $(TARGET).nds -7 $(TARGET).arm7.elf -9 $(TARGET).arm9.elf \
 			-b icon.bmp "GodMode9i;RocketRobz" -z 80040000 -u 00030004 
-
 
 $(TARGET).arm7: arm7/$(TARGET).elf
 	cp arm7/$(TARGET).elf $(TARGET).arm7.elf
@@ -141,15 +139,11 @@ $(TARGET).arm9: arm9/$(TARGET).elf
 #---------------------------------------------------------------------------------
 arm7/$(TARGET).elf:
 	@$(MAKE) -C arm7
-	
+
 #---------------------------------------------------------------------------------
 arm9/$(TARGET).elf:
 	@$(MAKE) -C arm9
 
-#---------------------------------------------------------------------------------
-#$(BUILD):
-	#@[ -d $@ ] || mkdir -p $@
-	#@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
@@ -167,19 +161,19 @@ data:
 
 bootloader: data
 	@$(MAKE) -C bootloader LOADBIN=$(CURDIR)/data/load.bin
-	
+
 bootstub: data
 	@$(MAKE) -C bootstub
 
 #---------------------------------------------------------------------------------
 else
- 
+
 #---------------------------------------------------------------------------------
 # main targets
 #---------------------------------------------------------------------------------
 #$(OUTPUT).nds	: 	$(OUTPUT).elf
 #$(OUTPUT).elf	:	$(OFILES)
- 
+
 #---------------------------------------------------------------------------------
 %.bin.o	:	%.bin
 #---------------------------------------------------------------------------------
@@ -187,7 +181,7 @@ else
 	$(bin2o)
 
 -include $(DEPSDIR)/*.d
- 
+
 #---------------------------------------------------------------------------------------
 endif
 #---------------------------------------------------------------------------------------
