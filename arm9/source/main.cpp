@@ -80,11 +80,8 @@ int main(int argc, char **argv) {
 
 	videoSetModeSub(MODE_3_2D);
 	videoSetMode(MODE_3_2D);
-	// initialize VRAM banks
-	vramSetPrimaryBanks(VRAM_A_MAIN_BG,
-	                    VRAM_B_MAIN_SPRITE,
-	                    VRAM_C_LCD,
-	                    VRAM_D_LCD);
+	vramSetBankC(VRAM_C_SUB_BG);
+	vramSetBankA(VRAM_A_MAIN_BG);
 	int bg0id = bgInitSub(3, BgType_Bmp8, BgSize_B8_256x256, 0, 0);
 	int bg1id = bgInit(3, BgType_Bmp8, BgSize_B8_256x256, 0, 0);
 	u16 *bg0 = bgGetGfxPtr(bg0id);
