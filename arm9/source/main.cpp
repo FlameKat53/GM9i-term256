@@ -125,8 +125,8 @@ int main(int argc, char **argv) {
 		prt("\x1b[22;1H");
 		prt("\t                              ");	// Clear "Y Held" text
 	}
-	prt("\x1b[22;11H");
-	prt("Mounting drives...");
+	prt("\x1b[22;1H");
+	prt("\taaMounting drives...");
 
 	sysSetCartOwner (BUS_OWNER_ARM9);	// Allow arm9 to access GBA ROM
 
@@ -146,7 +146,7 @@ int main(int argc, char **argv) {
 	}
 
 	videoSetMode(MODE_0_2D);
-	// initialize all the VRAM banks
+	// initialize **all** the VRAM banks
 	vramSetBankA(VRAM_A_TEXTURE);
 	vramSetBankB(VRAM_B_TEXTURE);
 	vramSetBankC(VRAM_C_SUB_BG_0x06200000);
@@ -160,6 +160,9 @@ int main(int argc, char **argv) {
 	keysSetRepeat(25,5);
 
 	appInited = true;
+
+	prt(Rst Cls BlkOnWht);
+	stop();
 
 	while(1) {
 
