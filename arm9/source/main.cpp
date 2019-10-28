@@ -2,14 +2,16 @@ extern "C" {
 #include "../term256/term256.h"
 #include "../term256/term256ext.h"
 }
+
 #include "nds_loader_arm9.h"
 #include "driveMenu.h"
 #include "driveOperations.h"
 #include "file_browse.h"
 #include "fileOperations.h"
-
+#include "main.h"
 #include "gm9i_logo.h"
 #include "driveMenu.h"
+
 #include <vector>
 #include <stdio.h>
 #include <string.h>
@@ -161,8 +163,7 @@ int main(int argc, char **argv) {
 
 	appInited = true;
 
-	prt(Rst Cls BlkOnWht);
-	stop();
+	prt(Cls);
 
 	while(1) {
 
