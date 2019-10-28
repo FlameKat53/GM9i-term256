@@ -61,7 +61,7 @@ void gbaCartDump(void) {
 	prt("\x1b[0;27H");
 	prt("\x1B[42m");		// Print green color
 	prt("_ :  ");	// Clear time
-	select_term(&t0);
+	//select_term(&t0);
 	prt("\x1B[47m");		// Print foreground white color
 	prt("Dump GBA cart ROM to\n");
 	prt("\"fat:/gm9i/out\"?\n");
@@ -268,11 +268,11 @@ void driveMenu (void) {
 		if (dmCursorPosition > dmMaxCursors)	dmCursorPosition = 0;		// Wrap around to top of list
 
 		if (!dmTextPrinted) {
-			select_term(&t0);
+			//select_term(&t0);
 			//prt(Cls);
 			consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, 15, 0, false, true);
 			dm_drawBottomScreen();
-			select_term(&t1);
+			//select_term(&t1);
 			//prt(Cls);
 			consoleInit(NULL, 0, BgType_Text4bpp, BgSize_T_256x256, 15, 0, true, true);
 			dm_drawTopScreen();
