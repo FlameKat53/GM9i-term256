@@ -93,7 +93,6 @@ int main(int argc, char **argv) {
 
 	select_term(&t0);
 	prt("\x1b[5;1H");
-	prt("\x1B[47m");
 	prt("GodMode9i\n");
 	prt("---------\n");
 	prt("https:/github.com/RocketRobz/GodMode9i");
