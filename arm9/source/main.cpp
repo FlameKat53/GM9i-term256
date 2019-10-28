@@ -25,6 +25,9 @@ char titleName[32] = {" "};
 
 int screenMode = 0;
 
+term_t t0;
+term_t t1;
+
 bool appInited = false;
 bool arm7SCFGLocked = false;
 bool isRegularDS = true;
