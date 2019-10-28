@@ -221,8 +221,8 @@ int main(int argc, char **argv) {
 				swiWaitForVBlank();
 				scanKeys();
 				if (!(keysHeld() & KEY_A)) break;
-			}
-		}*/
+			}*/
+		}
 
 	}
 
