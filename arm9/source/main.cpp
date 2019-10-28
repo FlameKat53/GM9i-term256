@@ -24,23 +24,14 @@ extern "C" {
 term_t t0;
 term_t t1;
 
-#define Cls "\x1b[2J"
-#define Rst "\x1b[0m"
-#define BlkOnWht "\x1b[30;47m"
-#define CyanOnBlk "\x1b[32;1;40m"
-#define Red "\x1b[31;1m"
-#define BlkOnRed "\x1b[31;1;7;30m"
-
 char titleName[32] = {" "};
 
 int screenMode = 0;
 
 bool appInited = false;
-
 bool arm7SCFGLocked = false;
 bool isRegularDS = true;
 bool is3DS = true;
-
 bool applaunch = false;
 
 static int bg3;
@@ -54,6 +45,7 @@ bool extension(const std::string& filename, const char* ext) {
 		return true;
 	}
 }
+
 void set_scroll_callback(int x, int y, void *param) {
 	bgSetScroll(*(int*)param, x, y);
 	bgUpdate();
@@ -101,15 +93,12 @@ int main(int argc, char **argv) {
 
 	select_term(&t0);
 	prt("\x1b[5;1H");
-	iprtf("\t%s", titleName);
-	prt("\x1b[6;1H");
-	prt("\t--------------------------------");
-	prt("\x1b[7;1H");
-	prt("\thttps:/github.com/\n");
-	prt("\t\t\t\tRocketRobz/GodMode9i");
+	prt("GodMode9i\n);
+	prt("---------\n");
+	prt("https:/github.com/RocketRobz/GodMode9i");
 	if (isDSiMode()) {
 		prt("\x1b[22;1H");
-		prt("\taaHold Y - Disable cart access");
+		prt("aaHold Y - Disable cart access");
 	}
 
 	// Display for 2 seconds
@@ -117,18 +106,17 @@ int main(int argc, char **argv) {
 		swiWaitForVBlank();
 	}
 
+	if (isDSiMode()) {
+		prt("\x1b[22;1H");
+		prt("                              ");	// Clear "Hold Y" text
+		prt("aaMounting drives...");
+	}
+
 	fifoWaitValue32(FIFO_USER_06);
 	if (fifoGetValue32(FIFO_USER_03) == 0) arm7SCFGLocked = true;
 	u16 arm7_SNDEXCNT = fifoGetValue32(FIFO_USER_07);
 	if (arm7_SNDEXCNT != 0) isRegularDS = false;	// If sound frequency setting is found, then the console is not a DS Phat/Lite
 	fifoSendValue32(FIFO_USER_07, 0);
-
-	if (isDSiMode()) {
-		prt("\x1b[22;1H");
-		prt("\t                              ");	// Clear "Y Held" text
-	}
-	prt("\x1b[22;1H");
-	prt("\taaMounting drives...");
 
 	sysSetCartOwner (BUS_OWNER_ARM9);	// Allow arm9 to access GBA ROM
 
@@ -174,8 +162,70 @@ int main(int argc, char **argv) {
 		}
 
 		if (applaunch) {
-		prt("not implemented ");
-		}
+			prt("Sorry, not yet implemented");
+			/*// Construct a command line
+			getcwd (filePath, PATH_MAX);
+			pathLen = strlen (filePath);
+			vector<char*> argarray;
+
+			if (extension(filename, ".argv") {
+
+				FILE *argfile = fopen(filename.c_str(),"rb");
+				char str[PATH_MAX], *pstr;
+				const char seps[]= "\n\r\t ";
+
+				while( fgets(str, PATH_MAX, argfile) ) {
+					// Find comment and end string there
+					if( (pstr = strchr(str, '#')) )
+						*pstr= '\0';
+
+					// Tokenize arguments
+					pstr= strtok(str, seps);
+
+					while( pstr != NULL ) {
+						argarray.push_back(strdup(pstr));
+						pstr= strtok(NULL, seps);
+					}
+				}
+				fclose(argfile);
+				filename = argarray.at(0);
+			} else {
+				argarray.push_back(strdup(filename.c_str()));
+			}
+
+			if (extension(filename, ".dsi") || extension(filename, ".nds")) {
+				char *name = argarray.at(0);
+				strcpy (filePath + pathLen, name);
+				free(argarray.at(0));
+				argarray.at(0) = filePath;
+				prt(Cls);
+				iprtf("Running %s with %d parameters\n", argarray[0], argarray.size());
+				int err = runNdsFile (argarray[0], argarray.size(), (const char **)&argarray[0]);
+				iprtf("\x1b[31mStart failed. Error %i\n", err);
+			}
+
+			if (extension(filename, ".firm")) {
+				char *name = argarray.at(0);
+				strcpy (filePath + pathLen, name);
+				free(argarray.at(0));
+				argarray.at(0) = filePath;
+				fcopy(argarray[0], "sd:/bootonce.firm");
+				fifoSendValue32(FIFO_USER_02, 1);	// Reboot into selected .firm payload
+				swiWaitForVBlank();
+			}
+
+			while(argarray.size() !=0 ) {
+				free(argarray.at(0));
+				argarray.erase(argarray.begin());
+			}
+
+			while (1) {
+				swiWaitForVBlank();
+				scanKeys();
+				if (!(keysHeld() & KEY_A)) break;
+			}
+		}*/
+
 	}
 
 	return 0;
