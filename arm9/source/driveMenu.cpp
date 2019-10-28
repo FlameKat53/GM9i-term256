@@ -55,6 +55,86 @@ static int dmMaxCursors = -1;
 
 static u8 gbaFixedValue = 0;
 
+void gbaCartDump(void) {
+	int pressed = 0;
+
+	prt("\x1b[0;27H");
+	prt("\x1B[42m");		// Print green color
+	prt("_ :  ");	// Clear time
+	select_term(&t0);
+	prt("\x1B[47m");		// Print foreground white color
+	prt("Dump GBA cart ROM to\n");
+	prt("\"fat:/gm9i/out\"?\n");
+	prt("(<A> yes, <B> no)");
+	while (true) {
+		// Power saving loop. Only poll the keys once per frame and sleep the CPU if there is nothing else to do
+		do {
+			scanKeys();
+			pressed = keysDownRepeat();
+			swiWaitForVBlank();
+		} while (!(pressed & KEY_A) && !(pressed & KEY_B));
+
+		if (pressed & KEY_A) {
+			prt(Cls);
+			if (access("fat:/gm9i", F_OK) != 0) {
+				prt("Creating directory...");
+				mkdir("fat:/gm9i", 0777);
+				mkdir("fat:/gm9i/out", 0777);
+			}
+
+			char gbaHeaderGameTitle[13] = "\0";
+			char gbaHeaderGameCode[5] = "\0";
+			char gbaHeaderMakerCode[3] = "\0";
+			for (int i = 0; i < 12; i++) {
+				gbaHeaderGameTitle[i] = *(char*)(0x080000A0+i);
+				if (*(u8*)(0x080000A0+i) == 0) {
+					break;
+				}
+			}
+			for (int i = 0; i < 4; i++) {
+				gbaHeaderGameCode[i] = *(char*)(0x080000AC+i);
+				if (*(u8*)(0x080000AC+i) == 0) {
+					break;
+				}
+			}
+			for (int i = 0; i < 2; i++) {
+				gbaHeaderMakerCode[i] = *(char*)(0x080000B0+i);
+			}
+			u8 gbaHeaderSoftwareVersion = *(u8*)(0x080000BC);
+			char destPath[256];
+			char destSavPath[256];
+			snprintf(destPath, sizeof(destPath), "fat:/gm9i/out/%s_%s%s_%x.gba", gbaHeaderGameTitle, gbaHeaderGameCode, gbaHeaderMakerCode, gbaHeaderSoftwareVersion);
+			snprintf(destSavPath, sizeof(destSavPath), "fat:/gm9i/out/%s_%s%s_%x.sav", gbaHeaderGameTitle, gbaHeaderGameCode, gbaHeaderMakerCode, gbaHeaderSoftwareVersion);
+			prt(Cls);
+			prt("Dumping...\n");
+			prt("Do not remove the GBA cart.\n");
+			// Determine ROM size
+			u32 romSize = 0x02000000;
+			for (u32 i = 0x09FE0000; i > 0x08000000; i -= 0x20000) {
+				if (*(u32*)(i) == 0xFFFE0000) {
+					romSize -= 0x20000;
+				} else {
+					break;
+				}
+			}
+			// Dump!
+			remove(destPath);
+			FILE* destinationFile = fopen(destPath, "wb");
+			fwrite((void*)0x08000000, 1, romSize, destinationFile);
+			fclose(destinationFile);
+			// Save file
+			remove(destSavPath);
+			destinationFile = fopen(destSavPath, "wb");
+			fwrite((void*)0x0A000000, 1, 0x10000, destinationFile);
+			fclose(destinationFile);
+			break;
+		}
+		if (pressed & KEY_B) {
+			break;
+		}
+	}
+}
+
 void dm_drawTopScreen(void) {
 	printf("\x1B[42m");		// Print green color
 	printf("________________________________");
@@ -333,86 +413,6 @@ void driveMenu (void) {
 				flashcardMounted = flashcardMount();	// Try to mount flashcard
 			}
 			flashcardMountRan = false;
-		}
-	}
-}
-
-void gbaCartDump(void) {
-	int pressed = 0;
-
-	prt("\x1b[0;27H");
-	prt("\x1B[42m");		// Print green color
-	prt("_ :  ");	// Clear time
-	select_term(&t0);
-	prt("\x1B[47m");		// Print foreground white color
-	prt("Dump GBA cart ROM to\n");
-	prt("\"fat:/gm9i/out\"?\n");
-	prt("(<A> yes, <B> no)");
-	while (true) {
-		// Power saving loop. Only poll the keys once per frame and sleep the CPU if there is nothing else to do
-		do {
-			scanKeys();
-			pressed = keysDownRepeat();
-			swiWaitForVBlank();
-		} while (!(pressed & KEY_A) && !(pressed & KEY_B));
-
-		if (pressed & KEY_A) {
-			prt(Cls);
-			if (access("fat:/gm9i", F_OK) != 0) {
-				prt("Creating directory...");
-				mkdir("fat:/gm9i", 0777);
-				mkdir("fat:/gm9i/out", 0777);
-			}
-
-			char gbaHeaderGameTitle[13] = "\0";
-			char gbaHeaderGameCode[5] = "\0";
-			char gbaHeaderMakerCode[3] = "\0";
-			for (int i = 0; i < 12; i++) {
-				gbaHeaderGameTitle[i] = *(char*)(0x080000A0+i);
-				if (*(u8*)(0x080000A0+i) == 0) {
-					break;
-				}
-			}
-			for (int i = 0; i < 4; i++) {
-				gbaHeaderGameCode[i] = *(char*)(0x080000AC+i);
-				if (*(u8*)(0x080000AC+i) == 0) {
-					break;
-				}
-			}
-			for (int i = 0; i < 2; i++) {
-				gbaHeaderMakerCode[i] = *(char*)(0x080000B0+i);
-			}
-			u8 gbaHeaderSoftwareVersion = *(u8*)(0x080000BC);
-			char destPath[256];
-			char destSavPath[256];
-			snprintf(destPath, sizeof(destPath), "fat:/gm9i/out/%s_%s%s_%x.gba", gbaHeaderGameTitle, gbaHeaderGameCode, gbaHeaderMakerCode, gbaHeaderSoftwareVersion);
-			snprintf(destSavPath, sizeof(destSavPath), "fat:/gm9i/out/%s_%s%s_%x.sav", gbaHeaderGameTitle, gbaHeaderGameCode, gbaHeaderMakerCode, gbaHeaderSoftwareVersion);
-			prt(Cls);
-			prt("Dumping...\n");
-			prt("Do not remove the GBA cart.\n");
-			// Determine ROM size
-			u32 romSize = 0x02000000;
-			for (u32 i = 0x09FE0000; i > 0x08000000; i -= 0x20000) {
-				if (*(u32*)(i) == 0xFFFE0000) {
-					romSize -= 0x20000;
-				} else {
-					break;
-				}
-			}
-			// Dump!
-			remove(destPath);
-			FILE* destinationFile = fopen(destPath, "wb");
-			fwrite((void*)0x08000000, 1, romSize, destinationFile);
-			fclose(destinationFile);
-			// Save file
-			remove(destSavPath);
-			destinationFile = fopen(destSavPath, "wb");
-			fwrite((void*)0x0A000000, 1, 0x10000, destinationFile);
-			fclose(destinationFile);
-			break;
-		}
-		if (pressed & KEY_B) {
-			break;
 		}
 	}
 }
