@@ -20,7 +20,12 @@
 
 ------------------------------------------------------------------*/
 
-#include "file_browse.h"
+extern "C" {
+#include "../term256/term256.h"
+#include "../term256/term256ext.h"
+}
+
+#include <nds.h>
 #include <vector>
 #include <algorithm>
 #include <unistd.h>
@@ -28,11 +33,10 @@
 #include <stdio.h>
 #include <dirent.h>
 
-#include <nds.h>
-
 #include "main.h"
 #include "date.h"
 #include "screenshot.h"
+#include "file_browse.h"
 #include "fileOperations.h"
 #include "driveMenu.h"
 #include "driveOperations.h"
@@ -188,7 +192,7 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 
 	printf ("\x1b[0;27H");
 	printf ("\x1B[42m");		// Print green color
-	printf ("_____");	// Clear time
+	printf ("_ :  ");	// Clear time
 	consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, 15, 0, false, true);
 	printf ("\x1B[47m");		// Print foreground white color
 	char fullPath[256];
