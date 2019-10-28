@@ -15,6 +15,9 @@
 #define Red "\x1b[31;1m"
 #define BlkOnRed "\x1b[31;1;7;30m"
 
+term_t t0;
+term_t t1;
+
 extern char titleName[32];
 
 extern int screenMode;
