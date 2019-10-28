@@ -21,9 +21,6 @@ extern "C" {
 #include <nds.h>
 #include <fat.h>
 
-term_t t0;
-term_t t1;
-
 char titleName[32] = {" "};
 
 int screenMode = 0;
